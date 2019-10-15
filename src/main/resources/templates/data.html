@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <title>data</title>
+
+    <!--<style>-->
+        <!--table, th, td {-->
+            <!--border: 1px solid black;-->
+            <!--border-collapse: collapse;-->
+            <!--color: rosybrown;-->
+        <!--}-->
+        <!--/*table{*/-->
+            <!--/*width: 80%;*/-->
+        <!--/*}*/-->
+        <!--tr{-->
+            <!--background-color: #374b8e;-->
+        <!--}-->
+    <!--</style>-->
+</head>
+<body>
+
+<table class="table-responsive">
+
+    <tr>
+        <th class="col-md-1 text-center">id</th>
+        <th class="col-md-1">login</th>
+        <th class="col-md-1">email</th>
+        <th class="col-md-2">offer id</th>
+        <th class="col-md-1">bought at</th>
+        <th class="col-md-1">price</th>
+        <th class="col-md-1">allegro id</th>
+        <th class="col-md-1">quantity</th>
+        <th class="col-md-3">voucher</th>
+    </tr>
+    <tr th:each="order : ${data}">
+        <td class="text-center"><div th:text="${order.getId()}">Id</div></td>
+        <td><div th:text="${order.getLogin()}">Login</div></td>
+        <td><div th:text="${order.getEmail()}" style="text-align: center">Email</div></td>
+        <td><div th:text="${order.getOfferId()}">OfferId</div></td>
+        <td><div th:text="${order.getBoughtAt()}">Bought At</div></td>
+        <td><div th:text="${order.getPrice()}" style="text-align: center">Price</div></td>
+        <td><div th:text="${order.getStringId()}">Allegro Id</div></td>
+        <td><div th:text="${order.getQuantity()}" style="text-align: center">Quantity</div></td>
+        <td><div th:text="${order.getVouchers().toString()}">Voucher</div></td>
+    </tr>
+
+    <!--<tr th:each="order : ${data}">-->
+        <!--<tr th:each="voucher : ${order.getVouchers}">-->
+            <!--<td><span th:text="${order.getId()}">Id</span></td>-->
+            <!--<td><span th:text="${order.getLogin()}">Login</span></td>-->
+            <!--<td><span th:text="${order.getEmail()}">Email</span></td>-->
+            <!--<td><span th:text="${order.getOfferId()}">OfferId</span></td>-->
+            <!--<td><span th:text="${order.getPaidAt()}">Paid At</span></td>-->
+            <!--<td><span th:text="${order.getPrice()}">Price</span></td>-->
+            <!--<td><span th:text="${order.getStringId()}">Allegro Id</span></td>-->
+            <!--<td><span th:text="${order.getQuantity()}">Quantity</span></td>-->
+            <!--<td><span th:text="${voucher.toString()}">Voucher</span></td>-->
+        <!--</tr>-->
+    <!--</tr>-->
+
+
+</table>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Automat</title>
+</head>
+<body>
+$END$
+<p>
+    <a th:text="${token}"></a>
+</p>
+
+<p>
+    Token expires in: <a th:text="${expires}"></a>
+</p>
+
+<p>Sender is <a th:text="${senderStatus}?'ON':'OFF'"></a></p>
+<p>
+    <form action="#" th:action="@{/sender}" method="post">
+        <button type="submit">CHANGE</button>
+    </form>
+</p>
+
+<input type="button" onclick="location.href='https://allegro.pl.allegrosandbox.pl/auth/oauth/authorize?response_type=code&client_id=\n'+
+'47b3b071788e48cd9b9070a26e1a8db9&redirect_uri=http://localhost:8080/';" value="Zaloguj do Allegro" />
+
+</body>
+</html>
