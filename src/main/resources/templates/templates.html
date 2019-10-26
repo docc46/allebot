@@ -1,0 +1,36 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <title>data</title>
+</head>
+<body>
+
+<table class="table-responsive">
+    <tr>
+        <th class="col-md-2">Id aukcji</th>
+        <th class="col-md-2">Tytul</th>
+        <th class="col-md-2">Img</th>
+        <th class="col-md-6">Treść</th>
+    </tr>
+    <tr th:each="template : ${templates}">
+        <td><div th:text="${template.getOfferId()}">ID</div> </td>
+        <td><div th:text="${template.getOfferTitle()}">Title</div> </td>
+        <td><div th:text="${template.getImgUrl()}">Img</div> </td>
+        <td><div th:text="${template.getText()}">text</div> </td>
+    </tr>
+</table>
+
+<p><a th:href="@{/new}">Nowy szablon</a> </p>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <title>data</title>
+</head>
+<body>
+
+    <div th:unless="${isConnected}">
+        <input type="button" onclick="location.href='https://allegro.pl.allegrosandbox.pl/auth/oauth/authorize?response_type=code&client_id=\n'+
+    '47b3b071788e48cd9b9070a26e1a8db9&redirect_uri=http://localhost:8080/auth&prompt=confirm';" value="Connect with Allegro" />
+    </div>
+    <div th:if="${isConnected}">CONNECTED</div>
+
+    <p>
+        <a th:href="@{/auctions}">Aukcje</a>
+    </p>
+
+
+
+</body>
+</html>

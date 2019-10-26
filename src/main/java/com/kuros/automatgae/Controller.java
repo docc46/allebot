@@ -2,20 +2,20 @@ package com.kuros.automatgae;
 
 import com.kuros.automatgae.connection.Connector;
 import com.kuros.automatgae.model.*;
-import com.kuros.automatgae.model.orderEvents.OrderEvent;
-import com.kuros.automatgae.model.orderEvents.OrderEventResponse;
+import com.kuros.automatgae.model.msg.MsgTemplate;
+import com.kuros.automatgae.model.userOffers.UserOffersResponse;
 import com.kuros.automatgae.repository.OrderRepository;
-import com.kuros.automatgae.repository.TpayOrderRepository;
+import com.kuros.automatgae.repository.TemplateRepository;
 import com.kuros.automatgae.repository.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 
@@ -31,34 +31,57 @@ public class Controller {
     private VoucherRepository voucherRepository;
 
     @Autowired
-    private TpayOrderRepository tpayOrderRepository;
+    private TemplateRepository templateRepository;
 
-    ModelAndView efcModelAndView = new ModelAndView("efc");
+    Connector connector = Connector.getInstance();
+
+    ModelAndView homeModelAndView = new ModelAndView("index");
     ModelAndView dataModelAndView = new ModelAndView("data");
-    ModelAndView codesModelAndView = new ModelAndView("codes").addObject("senderStatus",Connector.isSenderOn());
+    ModelAndView codesModelAndView = new ModelAndView("codes");
+    ModelAndView templatesModelAndView = new ModelAndView("templates");
+    ModelAndView newTemplateModelAndView = new ModelAndView("newtemplate");
 
     private Sender sender = new Sender();
 
-    @RequestMapping(value = "/listentpay", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getTpayTransaction1(@RequestParam Map<String, String> parameters) throws IOException, MessagingException {
-        logger.info("cos przyszlo :)");
-        logger.info(parameters.toString());
-        TpayOrder tpayOrder = new TpayOrder(parameters.get("tr_id"),parameters.get("tr_date"),parameters.get("tr_amount"),parameters.get("tr_paid"),parameters.get("tr_error"),
-                parameters.get("tr_email"),null);
-        tpayOrderRepository.save(tpayOrder);
-        sendTpayCode(tpayOrder);
-        return "TRUE";
+    @Scheduled(fixedRate = 20000)
+    public void ha(){
+        if(connector.getToken()!=null)
+            connector.refreshToken(connector.getRefreshToken());
     }
 
-    @RequestMapping(value = "/sender", method = RequestMethod.POST)
-    public ModelAndView switchSender(){
-        Connector.setSenderOn(!Connector.isSenderOn());
-        efcModelAndView.addObject("senderStatus",Connector.isSenderOn());
-        return efcModelAndView;
+    @RequestMapping(value = "/templates", method = RequestMethod.GET)
+    public ModelAndView getTemplates(){
+        List<MsgTemplate> templates = templateRepository.findAll();
+        List<MsgTemplate> detailedTemplates = connector.getTemplatesDetails(templates);
+
+        templatesModelAndView.addObject("templates",detailedTemplates);
+        return templatesModelAndView;
+    }
+
+    @RequestMapping(value = "/new", method = RequestMethod.GET)
+    public ModelAndView newTemplate(){
+        if(connector.getToken()!=null) {
+            UserOffersResponse resp = connector.getUsersOffers();
+            newTemplateModelAndView.addObject("newtemp", new MsgTemplate());
+            newTemplateModelAndView.addObject("auctions", resp);
+        }
+        return newTemplateModelAndView;
+    }
+
+    @RequestMapping(value = "/new", method = RequestMethod.POST)
+    public ModelAndView newTemplate(@ModelAttribute("newtemp") MsgTemplate msgTemplate){
+        templateRepository.save(msgTemplate);
+        return new ModelAndView("redirect:/templates");
+    }
+
+    @RequestMapping(value = "/codes", method = RequestMethod.GET)
+    public ModelAndView getCodes(){
+        codesModelAndView.addObject("voucher", new VoucherBatch());
+        return codesModelAndView;
     }
 
     @RequestMapping(value = "/codes", method = RequestMethod.POST)
-    public ModelAndView AddCodes(@ModelAttribute("voucher") VoucherBatch voucherBatch){
+    public ModelAndView addCodes(@ModelAttribute("voucher") VoucherBatch voucherBatch){
         String[] lines = voucherBatch.getVouchers().split(" 00:59:59 ");
         for (String line : lines) {
             String[] voucherData = line.split(";");
@@ -72,77 +95,17 @@ public class Controller {
         return codesModelAndView;
     }
 
-    @RequestMapping(value = "/codes", method = RequestMethod.GET)
-    public ModelAndView getCodes(){
-        codesModelAndView.addObject("voucher", new VoucherBatch());
-        return codesModelAndView;
-    }
-
-    @RequestMapping
+    @RequestMapping(value = "/auth")
     public ModelAndView authorize(@RequestParam(value = "code", required = false) String code) {
-
-        if (code != null && Connector.getToken() == null) {
-		    Connector.authorizeAndGetToken(code);
- 		
-     		efcModelAndView.addObject("token", Connector.getToken());
-            efcModelAndView.addObject("expires",Connector.getExpiresin());
+        if (code != null && connector.getToken() == null) {
+            connector.authorizeAndGetToken(code);
         }
-        return efcModelAndView;
+        return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping(value = "/data")
-    public ModelAndView getData(@RequestParam(value = "offerid", required = false) String offerId){
-        if(offerId==null) dataModelAndView.addObject("data",orderRepository.findAll());
-        else dataModelAndView.addObject("data",orderRepository.findByOfferId(offerId));
-        return dataModelAndView;
+    @RequestMapping(value = "/")
+    public ModelAndView home(){
+        homeModelAndView.addObject("isConnected", connector.isConnected());
+        return homeModelAndView;
     }
-
-    public void sendTpayCode(TpayOrder tpayOrder) throws IOException, MessagingException {
-        Voucher voucher = voucherRepository.findFirstBySentFalseAndValue(tpayOrder.getTr_paid());
-        if(voucher!=null){
-            tpayOrder.setVoucher(voucher);
-            voucher.setSent(true);
-            voucher.setTpayOrder(tpayOrder);
-            voucherRepository.save(voucher);
-            sender.sendMessage(tpayOrder.getTr_email(),"PSC24.pl - Twój kod Paysafecard","oto kody",voucher);
-        }
-        tpayOrderRepository.save(tpayOrder);
-    }
-
-    public void sendAllegroCodes(Order order) throws MessagingException, IOException {
-            for (int i = 0; i < order.getQuantity(); i++) {
-                Voucher voucher = voucherRepository.findFirstBySentFalseAndValue(OfferResolver.resolveIdToVoucherValue(order.getOfferId()));
-                if(voucher!=null) {
-                    order.getVouchers().add(voucher);
-                    voucher.setSent(true);
-                    voucher.setOrder(order);
-                    voucherRepository.save(voucher);
-                    sender.sendMessage(order.getEmail(),"PSC Allegro", "oto kod", voucher);
-                }
-            }
-            orderRepository.save(order);
-    }
-
-    @Scheduled(fixedDelay = 10000)
-    public void refresh() throws IOException, MessagingException {
-        if (Connector.getToken()!=null){
-            logger.info("refreshing data...");
-            OrderEventResponse orderEventResponse = Connector.getOrderEvents();
-            System.out.println(orderEventResponse.getEvents().size());
-            if(orderEventResponse.getEvents().size()>0)
-            Connector.setLastSeenId(orderEventResponse.getEvents().get(orderEventResponse.getEvents().size()-1).getId());
-            for (OrderEvent event : orderEventResponse.getEvents()) {
-                for (Order order : event.getOrders()) {
-                    orderRepository.save(order);
-                    if(Connector.isSenderOn()) {
-                        logger.info("sending codes");
-                        sendAllegroCodes(order);
-                    }
-                }
-            }
-            logger.info("data fresh!");
-            logger.info("sender: " + Connector.isSenderOn());
-        }
-    }
-
 }
