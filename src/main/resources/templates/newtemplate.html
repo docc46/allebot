@@ -4,29 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <title>data</title>
+    <title>New template</title>
+
+    <style>
+        .navbar-collapse.collapse.in {
+            display: block!important;
+        }
+
+        .navbar {
+            background: #0e1230;
+            color: white;
+            border-bottom: 1px solid #252525;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .nav-item:hover {
+                padding-left: 10px;
+                padding-right: 10px;
+                width: fit-content;
+                position: relative;
+                box-shadow: #000000 ;
+            }
+        }
+
+        .bot-info {
+
+        }
+
+        .stats {
+            background-color: #33cd36;
+            color: white;
+        }
+
+        body {
+            background: rgba(29, 54, 100, 0.99);
+            color: white;
+        }
+
+        .form-control {
+            margin-top: 10px;
+        }
+
+
+
+    </style>
 </head>
 <body>
 
-<form action="#" th:action="@{/new}" th:object="${newtemp}" method="post">
+<!--navbar-->
+<nav class="navbar navbar-expand-md navbar-dark">
+    <a class="navbar-brand" href="#">
+        <img th:src="@{'img/logosmall.png'}" height="60px" width="50px">
+    </a>
 
-    <select th:field="*{offerId}">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navig">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <option th:each="auction : ${auctions.getOffers()}" th:value="${auction.getId()}" th:text="${auction.getName()}"></option>
+    <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/}">Home</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/templates}">Templates</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/history}">History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-    </select>
-    <p>Message: <input type="text" th:field="*{text}" /></p>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-md-12">
 
-    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+            <form action="#" th:action="@{/new}" th:object="${newtemp}" method="post">
+                <div class="form-group">
+                    <label for="offerSelect">Select Offer:</label>
+                    <select class="form-control" id="offerSelect" th:field="*{offerId}">
 
-</form>
+                        <option th:each="auction : ${auctions.getOffers()}" th:value="${auction.getId()}" th:text="${auction.getName()}"></option>
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="messageInput">Message:</label>
+                    <input class="form-control" id="messageInput" type="text" th:field="*{text}" />
+                    <input class="form-control" type="submit" value="Submit" /> <input class="form-control" type="reset" value="Reset" />
+                </div>
+<!--                <p>Message: <input type="text" th:field="*{text}" /></p>-->
+
+<!--                <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>-->
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
 
 </body>
 </html>

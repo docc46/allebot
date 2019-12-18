@@ -1,6 +1,6 @@
 package com.kuros.automatgae.repository;
 
-import com.kuros.automatgae.model.msg.MsgTemplate;
+import com.kuros.automatgae.model.messages.MsgTemplate;
 import org.springframework.data.repository.CrudRepository;
 
 import java.math.BigInteger;

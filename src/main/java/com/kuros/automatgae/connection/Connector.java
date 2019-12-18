@@ -1,8 +1,7 @@
 package com.kuros.automatgae.connection;
 
 import com.kuros.automatgae.model.AuthResponse;
-import com.kuros.automatgae.model.CheckoutFormsResponse;
-import com.kuros.automatgae.model.msg.MsgTemplate;
+import com.kuros.automatgae.model.messages.MsgTemplate;
 import com.kuros.automatgae.model.orderEvents.OrderEventResponse;
 import com.kuros.automatgae.model.userOffers.OfferListingDto;
 import com.kuros.automatgae.model.userOffers.UserOffersResponse;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigInteger;
@@ -30,6 +28,7 @@ public class Connector {
         return single_instance;
     }
 
+    private String lastSeenId;
     private String token;
     private String refreshToken;
 
@@ -67,7 +66,7 @@ public class Connector {
         setRefreshToken(authResponse.getRefresh_token());
     }
 
-    public List<MsgTemplate> getTemplatesDetails(List<MsgTemplate> templates){
+    public List<MsgTemplate> getTemplatesDetails(List<MsgTemplate> templates) {
         List<MsgTemplate> detailedTemplates = new ArrayList<>();
         for (MsgTemplate template : templates) {
             UserOffersResponse response = getUsersOffers(template.getOfferId());
@@ -83,9 +82,9 @@ public class Connector {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", "application/vnd.allegro.public.v1+json");
-        headers.add("Authorization", "Bearer " + getToken());
+        headers.add("Authorization", "Bearer " + token);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        String uri = "https://api.allegro.pl.allegrosandbox.pl/sale/offers";
+        String uri = "https://api.allegro.pl.allegrosandbox.pl/sale/offers?type=READY_FOR_PROCESSING";
         ResponseEntity<UserOffersResponse> response = restTemplate.exchange(uri, HttpMethod.GET, request, UserOffersResponse.class);
         return response.getBody();
     }
@@ -94,10 +93,22 @@ public class Connector {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", "application/vnd.allegro.public.v1+json");
-        headers.add("Authorization", "Bearer " + getToken());
+        headers.add("Authorization", "Bearer " + token);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        String uri = "https://api.allegro.pl.allegrosandbox.pl/sale/offers?offer.id=" + id;
+        String uri = "https://api.allegro.pl.allegrosandbox.pl/sale/offers?type=READY_FOR_PROCESSING&offer.id=" + id;
         ResponseEntity<UserOffersResponse> response = restTemplate.exchange(uri, HttpMethod.GET, request, UserOffersResponse.class);
+        return response.getBody();
+    }
+
+    public OrderEventResponse getOrderEvents() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept", "application/vnd.allegro.beta.v1+json");
+        headers.add("Authorization", "Bearer " + token);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String uri = "https://api.allegro.pl.allegrosandbox.pl/order/events?type=BOUGHT";
+        if (lastSeenId != null) uri += "&from=" + lastSeenId;
+        ResponseEntity<OrderEventResponse> response = restTemplate.exchange(uri, HttpMethod.GET, request, OrderEventResponse.class);
         return response.getBody();
     }
 
@@ -119,5 +130,13 @@ public class Connector {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public String getLastSeenId() {
+        return lastSeenId;
+    }
+
+    public void setLastSeenId(String lastSeenId) {
+        this.lastSeenId = lastSeenId;
     }
 }

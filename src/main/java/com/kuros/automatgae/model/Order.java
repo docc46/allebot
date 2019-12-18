@@ -1,6 +1,7 @@
 package com.kuros.automatgae.model;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,25 +12,20 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private String stringId;
     private String email;
     private String login;
     private String boughtAt;
-    private String offerId;
+    private BigInteger offerId;
     private String price;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private Set<Voucher> vouchers;
-    private int quantity;
+    private boolean msgSent;
 
-    public Order(String stringId, String email, String login, String boughtAt, String offerId, String price, Set<Voucher> vouchers, int quantity) {
-        this.stringId = stringId;
+    public Order(String email, String login, String boughtAt, BigInteger offerId, String price) {
         this.email = email;
         this.login = login;
         this.boughtAt = boughtAt;
         this.offerId = offerId;
         this.price = price;
-        this.vouchers = vouchers;
-        this.quantity = quantity;
+        this.msgSent = false;
     }
 
     public Order() {
@@ -41,14 +37,6 @@ public class Order {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getStringId() {
-        return stringId;
-    }
-
-    public void setStringId(String stringId) {
-        this.stringId = stringId;
     }
 
     public String getEmail() {
@@ -75,11 +63,11 @@ public class Order {
         this.boughtAt = boughtAt;
     }
 
-    public String getOfferId() {
+    public BigInteger getOfferId() {
         return offerId;
     }
 
-    public void setOfferId(String offerId) {
+    public void setOfferId(BigInteger offerId) {
         this.offerId = offerId;
     }
 
@@ -91,34 +79,29 @@ public class Order {
         this.price = price;
     }
 
-    public Set<Voucher> getVouchers() {
-        return vouchers;
+    public boolean isMsgSent() {
+        return msgSent;
     }
 
-    public void setVouchers(Set<Voucher> vouchers) {
-        this.vouchers = vouchers;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setMsgSent(boolean msgSent) {
+        this.msgSent = msgSent;
     }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", stringId='" + stringId + '\'' +
                 ", email='" + email + '\'' +
                 ", login='" + login + '\'' +
                 ", boughtAt='" + boughtAt + '\'' +
-                ", offerId='" + offerId + '\'' +
+                ", offerId=" + offerId +
                 ", price='" + price + '\'' +
-                ", vouchers=" + vouchers +
-                ", quantity=" + quantity +
+                ", msgSent=" + msgSent +
                 '}';
+    }
+
+    public String getBoughtAtFormatted(){
+        String formatted = boughtAt.replace('T',' ').substring(0,19);
+        return formatted;
     }
 }

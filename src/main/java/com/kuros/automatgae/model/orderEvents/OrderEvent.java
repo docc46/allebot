@@ -2,6 +2,7 @@ package com.kuros.automatgae.model.orderEvents;
 
 import com.kuros.automatgae.model.Order;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -31,14 +32,11 @@ public class OrderEvent {
         ArrayList<Order> orders = new ArrayList<>();
         for(OrderLineItem lineItem : this.getOrder().getLineItems()){
             Order order = new Order(
-                    this.id,
                     this.getOrder().getBuyer().getEmail(),
                     this.getOrder().getBuyer().getLogin(),
                     lineItem.getBoughtAt(),
-                    lineItem.getOffer().getId(),
-                    lineItem.getPrice().getAmount(),
-                    new HashSet<>(),
-                    lineItem.getQuantity()
+                    new BigInteger(lineItem.getOffer().getId()),
+                    lineItem.getPrice().getAmount()
             );
             orders.add(order);
         }

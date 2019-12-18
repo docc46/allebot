@@ -1,7 +1,6 @@
-package com.kuros.automatgae.model.msg;
+package com.kuros.automatgae.model.messages;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Entity

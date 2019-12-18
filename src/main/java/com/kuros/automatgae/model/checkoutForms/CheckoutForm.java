@@ -1,10 +1,9 @@
 package com.kuros.automatgae.model.checkoutForms;
 
 import com.kuros.automatgae.model.Order;
-import com.kuros.automatgae.model.Voucher;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class CheckoutForm {
 
@@ -41,14 +40,11 @@ public class CheckoutForm {
         ArrayList<Order> orders = new ArrayList<>();
         for(CheckoutFormLineItem lineItem : this.lineItems){
                 Order order = new Order(
-                        this.id,
                         this.buyer.getEmail(),
                         this.buyer.getLogin(),
                         lineItem.getBoughtAt(),
-                        lineItem.getOffer().getId(),
-                        lineItem.getPrice().getAmount(),
-                        new HashSet<>(),
-                        lineItem.getQuantity()
+                        new BigInteger(lineItem.getOffer().getId()),
+                        lineItem.getPrice().getAmount()
                         );
                 orders.add(order);
         }

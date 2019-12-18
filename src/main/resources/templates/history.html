@@ -11,7 +11,7 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <title>Templates</title>
+    <title>History</title>
 
     <style>
         .navbar-collapse.collapse.in {
@@ -47,6 +47,10 @@
             background: rgba(29, 54, 100, 0.99);
         }
 
+        table {
+            background-color: #1d3664;
+        }
+
 
 
     </style>
@@ -79,21 +83,29 @@
 </nav>
 
 <div class="table-responsive">
-<table class="table table-sm table-dark">
-    <tr>
-        <th>Offer ID</th>
-        <th>Title</th>
-        <th>Message</th>
-    </tr>
-    <tr th:each="template : ${templates}">
-        <td><div th:text="${template.getOfferId()}">ID</div> </td>
-        <td><div th:text="${template.getOfferTitle()}">Title</div> </td>
-        <td><div th:text="${template.getText()}">Message</div> </td>
-    </tr>
-</table>
-</div>
+    <table class="table table-sm table-dark">
+        <thead>
+        <tr>
+            <th>Bought At</th>
+            <th>Login</th>
+            <th>E-mail</th>
+            <th>Price</th>
+            <th>Message sent</th>
+        </tr>
+        </thead>
 
-<p><a class="btn btn-primary" th:href="@{/new}">Add new template</a> </p>
+
+
+        <tr th:each="order : ${orders}">
+            <td><div th:text="${order.getBoughtAtFormatted()}"></div></td>
+            <td><div th:text="${order.getLogin()}"></div></td>
+            <td><div th:text="${order.getEmail()}"></div></td>
+            <td><div th:text="${order.getPrice()}"></div></td>
+            <td><div th:text="${order.isMsgSent() ? 'Yes' : 'No'}"></div></td>
+        </tr>
+
+    </table>
+</div>
 
 </body>
 </html>

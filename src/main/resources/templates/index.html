@@ -4,27 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <title>data</title>
+    <title>Allebot</title>
+
+    <style>
+        .navbar-collapse.collapse.in {
+            display: block!important;
+        }
+
+        .navbar {
+            background: #0e1230;
+            color: white;
+            border-bottom: 1px solid #252525;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .nav-item:hover {
+                padding-left: 10px;
+                padding-right: 10px;
+                width: fit-content;
+                position: relative;
+                box-shadow: #000000 ;
+            }
+        }
+
+        .bot-info {
+
+        }
+
+        .stats {
+            background-color: #343a40;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #252525;
+            margin-bottom: 30px;
+        }
+
+        body {
+            background: rgba(29, 54, 100, 0.99);
+            color: white;
+        }
+
+        /*.desc {*/
+        /*    color: white;*/
+        /*}*/
+
+
+
+    </style>
 </head>
 <body>
 
-    <div th:unless="${isConnected}">
-        <input type="button" onclick="location.href='https://allegro.pl.allegrosandbox.pl/auth/oauth/authorize?response_type=code&client_id=\n'+
-    '47b3b071788e48cd9b9070a26e1a8db9&redirect_uri=http://localhost:8080/auth&prompt=confirm';" value="Connect with Allegro" />
+<!--navbar-->
+<nav class="navbar navbar-expand-md navbar-dark">
+    <a class="navbar-brand" href="#">
+        <img th:src="@{'img/logosmall.png'}" height="60px" width="50px">
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navig">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/}">Home</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/templates}">Templates</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/history}">History</a>
+            </li>
+        </ul>
     </div>
-    <div th:if="${isConnected}">CONNECTED</div>
+</nav>
 
-    <p>
-        <a th:href="@{/auctions}">Aukcje</a>
-    </p>
+<div class="container-fluid text-center stats">
+    <div class="row">
+            <div class="col-md-4 bot-info">
+                Active offers: <span th:text="${activeOffers}"></span><br>
+            </div>
 
+            <div class="col-md-4 bot-info">
+                Active templates: <span th:text="${activeTemplates}"></span>
+            </div>
+
+            <div class="col-md-4 bot-info">
+                Total mails sent: <span th:text="${mailsSent}"></span>
+            </div>
+    </div>
+</div>
+<div class="container text-center desc">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>
+                Allebot - send automated e-mails to your Allegro customers
+            </h3>
+                <p>Set up messaging templates and enjoy automated mail delivery in your offers.</p>
+                <p>All purchases and their mailing status can be checked in the History tab.</p>
+        </div>
+    </div>
+</div>
 
 
 </body>
